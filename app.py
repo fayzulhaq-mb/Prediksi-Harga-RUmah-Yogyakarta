@@ -286,8 +286,9 @@ def main():
     st.markdown("""
     <div class="header-container">
         <h1>🏠 Prediksi Harga Rumah Yogyakarta</h1>
-        <h3>Powered by Random Forest Machine Learning</h3>
+        <h3>Powered by Fayzulhaq | Random Forest Machine Learning</h3>
         <p>Dapatkan estimasi harga rumah impian Anda di Yogyakarta dengan akurasi tinggi!</p>
+        <p>Warning!!! Website ini dibuat hanya untuk sekadar prediksi berdasarkan model!</p>
     </div>
     """, unsafe_allow_html=True)
     

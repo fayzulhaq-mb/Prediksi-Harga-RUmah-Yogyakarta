@@ -543,7 +543,6 @@ def main():
     <div style="text-align: center; padding: 2rem;">
         <p>🏠 <strong>Yogyakarta Housing Price Predictor</strong> | 
         Powered by <strong>Fayzulhaq</strong> | 
-        Made with ❤️ using <strong>Streamlit</strong></p>
         <p><em>Prediksi harga rumah akurat untuk investasi properti yang cerdas</em></p>
     </div>
     """, unsafe_allow_html=True)

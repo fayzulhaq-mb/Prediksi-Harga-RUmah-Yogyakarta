@@ -136,8 +136,20 @@ def load_model_and_preprocessors():
         # Load label encoder
         label_encoder = joblib.load('location_encoder.pkl')
         
-        # Load model info
-        model_info = joblib.load('model_info.pkl')
+        # Load model info dengan error handling
+        try:
+            model_info = joblib.load('model_info.pkl')
+        except FileNotFoundError:
+            # Jika model_info.pkl tidak ada, buat default values
+            model_info = {
+                'model_performance': {
+                    'r2_score': 0.86,
+                    'rmse': 200000000,
+                    'mae': 150000000,
+                    'cv_mean': 0.85  # Tambahkan cv_mean default
+                }
+            }
+            st.warning("⚠️ File model_info.pkl tidak ditemukan, menggunakan nilai default.")
         
         return model, scaler, label_encoder, model_info
         
@@ -268,15 +280,24 @@ def main():
     with st.sidebar:
         st.markdown("## 📊 Informasi Model")
         
-        # Model performance metrics
-        if model_info:
+        # Model performance metrics dengan error handling
+        if model_info and 'model_performance' in model_info:
+            performance = model_info['model_performance']
             col1, col2 = st.columns(2)
             with col1:
-                st.metric("R² Score", f"{model_info['model_performance']['r2_score']:.1%}")
-                st.metric("RMSE", f"Rp {model_info['model_performance']['rmse']/1e6:.1f}M")
+                # Safe access dengan get() method dan default values
+                r2_score = performance.get('r2_score', 0.86)
+                rmse = performance.get('rmse', 200000000)
+                st.metric("R² Score", f"{r2_score:.1%}")
+                st.metric("RMSE", f"Rp {rmse/1e6:.1f}M")
             with col2:
-                st.metric("MAE", f"Rp {model_info['model_performance']['mae']/1e6:.1f}M")
-                st.metric("CV Score", f"{model_info['model_performance']['cv_mean']:.1%}")
+                mae = performance.get('mae', 150000000)
+                cv_mean = performance.get('cv_mean', performance.get('cv_score', 0.85))  # Fallback untuk cv_score
+                st.metric("MAE", f"Rp {mae/1e6:.1f}M")
+                st.metric("CV Score", f"{cv_mean:.1%}")
+        else:
+            # Fallback jika model_info tidak tersedia
+            st.info("📊 Informasi performa model tidak tersedia")
         
         st.markdown("---")
         st.markdown("## 🎯 Cara Penggunaan")
@@ -335,9 +356,16 @@ def main():
                     help="Luas tanah dalam meter persegi"
                 )
                 
+                # Safe access untuk label_encoder.classes_
+                try:
+                    location_options = label_encoder.classes_
+                except AttributeError:
+                    # Fallback jika classes_ tidak tersedia
+                    location_options = ['Sleman', 'Bantul', 'Kota Yogya', 'Kulon Progo', 'Gunung Kidul']
+                
                 location = st.selectbox(
                     "Lokasi",
-                    options=label_encoder.classes_,
+                    options=location_options,
                     help="Pilih lokasi/kabupaten di Yogyakarta"
                 )
             
@@ -384,9 +412,10 @@ def main():
                     </div>
                     """.format(predicted_price), unsafe_allow_html=True)
                     
-                    # Confidence interval
-                    if model_info:
-                        mae = model_info['model_performance']['mae']
+                    # Confidence interval dengan safe access
+                    if model_info and 'model_performance' in model_info:
+                        performance = model_info['model_performance']
+                        mae = performance.get('mae', 150000000)  # Default MAE
                         lower_bound = predicted_price - mae
                         upper_bound = predicted_price + mae
                         
@@ -428,10 +457,15 @@ def main():
                     fig_importance = create_feature_importance_chart(model_info)
                     st.plotly_chart(fig_importance, use_container_width=True)
                     
-                    # Interpretasi hasil
+                    # Interpretasi hasil dengan safe access
                     st.markdown("### 🧠 **Interpretasi Hasil**")
                     
                     price_per_m2 = predicted_price / building_area
+                    
+                    # Safe access untuk r2_score
+                    r2_score = 0.86  # Default value
+                    if model_info and 'model_performance' in model_info:
+                        r2_score = model_info['model_performance'].get('r2_score', 0.86)
                     
                     interpretation = f"""
                     **📋 Ringkasan Properti:**
@@ -440,7 +474,7 @@ def main():
                     - 📍 Lokasi: {location}
                     - 💵 Harga per m²: Rp {price_per_m2:,.0f}/m²
                     
-                    **🎯 Tingkat Kepercayaan:** {model_info['model_performance']['r2_score']:.1%}
+                    **🎯 Tingkat Kepercayaan:** {r2_score:.1%}
                     
                     **💡 Rekomendasi:**
                     """

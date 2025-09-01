@@ -68,23 +68,41 @@ st.markdown("""
     
     /* Metric cards */
     .metric-card {
-        background: rgba(255, 255, 255, 0.9);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         padding: 1.5rem;
         border-radius: 10px;
         text-align: center;
         margin: 0.5rem;
         box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.2);
+        color: white !important;
     }
     
-    /* Input styling */
+    .metric-card h3, .metric-card h4, .metric-card p {
+        color: white !important;
+    }
+    
+    /* Input styling - Fix untuk dropdown dan input fields */
     .stSelectbox > div > div > div {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border-radius: 10px !important;
+        color: #333333 !important;
+    }
+    
+    .stSelectbox > div > div > div > div {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        color: #333333 !important;
     }
     
     .stNumberInput > div > div > input {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border-radius: 10px !important;
+        color: #333333 !important;
+    }
+    
+    /* Fix untuk selectbox options */
+    .stSelectbox [data-baseweb="select"] > div {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        color: #333333 !important;
     }
     
     /* Button styling */
@@ -305,7 +323,7 @@ def main():
         
         st.markdown("---")
         st.markdown("## 📈 Akurasi Model")
-        st.info("Model ini dilatih dengan **86% akurasi** menggunakan data real properti Yogyakarta")
+        st.info("Model ini dilatih dengan akurasi **84.9%** menggunakan data real properti Yogyakarta")
 
     # Main content area
     col1, col2 = st.columns([2, 1])
@@ -461,9 +479,9 @@ def main():
                     price_per_m2 = predicted_price / building_area
                     
                     # Safe access untuk r2_score
-                    r2_score = 0.86  # Default value
+                    r2_score = 0.849  # Default value yang lebih realistis
                     if model_info and 'model_performance' in model_info:
-                        r2_score = model_info['model_performance'].get('r2_score', 0.86)
+                        r2_score = model_info['model_performance'].get('r2_score', 0.849)
                     
                     interpretation = f"""
                     **📋 Ringkasan Properti:**
@@ -516,10 +534,7 @@ def main():
         st.success("""
         **🎯 Akurasi Model:**
         
-        Model Random Forest ini mencapai akurasi **86%** dengan:
-        - 📊 R² Score: 86%
-        - 📈 Cross-validation: 85%
-        - 🎯 Mean Absolute Error: ~200 juta
+        Model Random Forest ini mencapai akurasi **84.9%** dengan training data properti Yogyakarta yang komprehensif.
         """)
 
     # Footer
@@ -527,7 +542,7 @@ def main():
     st.markdown("""
     <div style="text-align: center; padding: 2rem;">
         <p>🏠 <strong>Yogyakarta Housing Price Predictor</strong> | 
-        Powered by <strong>Random Forest ML</strong> | 
+        Powered by <strong>Fayzulhaq</strong> | 
         Made with ❤️ using <strong>Streamlit</strong></p>
         <p><em>Prediksi harga rumah akurat untuk investasi properti yang cerdas</em></p>
     </div>
